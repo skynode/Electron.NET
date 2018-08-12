@@ -3,13 +3,13 @@
 
 AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/status/q95h4xt14papwi05/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
 
-* Checkout AppVeyor Aritfacts: Contains the WebApp sample builded for Windows & Linux!
+* Checkout AppVeyor Artifacts: Contains the WebApp sample built for Windows & Linux!
 
 Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
 Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
 
-Electron.NET is a __wrapper__ around a "normal" Electron application with a embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
+Electron.NET is a __wrapper__ around a "normal" Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
 
 The CLI extensions hosts our toolset to build and start Electron.NET applications.
 
@@ -88,9 +88,11 @@ For the tooling you will need your dotnet-electronize package [ElectronNET.CLI N
 
 ```
     <ItemGroup>
-         <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
+         <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
     </ItemGroup>
 ```
+Be aware of the version: The current version of the CLI is 0.0.9.
+
 After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
 
 ```
@@ -132,21 +134,33 @@ In this YouTube video, we show you how you can create a new project, use the Ele
 Here you need the Electron.NET CLI too. Type following command in your ASP.NET Core folder:
 
 ```
-    dotnet electronize build
+    dotnet electronize build /target win
 ```
 
-In your default setting we just build the application for the OS you are running (Windows builds Windows, macOS builds macOS etc.), but this can be changed with:
+There are additional platforms available:
 
 ```
-    dotnet electronize build win
-    dotnet electronize build osx
-    dotnet electronize build linux
+    dotnet electronize build /target win
+    dotnet electronize build /target osx
+    dotnet electronize build /target linux
+```
+
+Those three "default" targets will produce x64 packages for those platforms.
+
+For certain NuGet packages or certain scenarios you may want to build a pure x86 application. To support those things you can define the desired [.NET Core runtime](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog), the [electron platform](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#platform) and [electron architecture](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#arch) like this:
+
+```
+    dotnet electronize build build /target custom win7-x86;win32 /electron-arch ia32 
 ```
 
 The end result should be an electron app under your __/bin/desktop__ folder.
 
+## Starter kits
+
+There is a React/Typescript/MobX starter kit at https://github.com/yoDon/Electron.NET-React-Typescript-MobX
+
 ### Note
-> macOS builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. The macOS builds works on Linux/macOS however.
+> macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
 
 # Working with this Repo
 

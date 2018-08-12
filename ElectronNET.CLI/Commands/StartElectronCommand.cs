@@ -48,10 +48,16 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-                var platformInfo = GetTargetPlatformInformation.Do(string.Empty);
+                var platformInfo = GetTargetPlatformInformation.Do(String.Empty, String.Empty);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
+
+                if (resultCode != 0)
+                {
+                    Console.WriteLine("Error occurred during dotnet publish.");
+                    return false;
+                }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 

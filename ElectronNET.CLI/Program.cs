@@ -7,7 +7,6 @@ using System.Text;
 
 namespace ElectronNET.CLI
 {
- 
     class Program
     {
         static void Main(string[] args)
@@ -71,7 +70,7 @@ namespace ElectronNET.CLI
                 sb.Append($" ({version})");
             }
             Console.WriteLine(sb.ToString());
-            Console.WriteLine("Project Home: https://github.com/GregorBiswanger/ElectronNET");
+            Console.WriteLine("Project Home: https://github.com/ElectronNET/Electron.NET");
             Console.WriteLine("\t");
         }
 

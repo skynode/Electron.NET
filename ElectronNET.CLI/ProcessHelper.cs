@@ -6,7 +6,7 @@ namespace ElectronNET.CLI
 {
     public class ProcessHelper
     {
-        public static void CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true)
+        public static int CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true)
         {
             using (Process cmd = new Process())
             {
@@ -28,10 +28,50 @@ namespace ElectronNET.CLI
                 cmd.StartInfo.CreateNoWindow = true;
                 cmd.StartInfo.UseShellExecute = false;
                 cmd.StartInfo.WorkingDirectory = workingDirectoryPath;
+
+                int returnCode = 0;
+
                 if (output)
                 {
-                    cmd.OutputDataReceived += (s, e) => Console.WriteLine(e.Data);
-                    cmd.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
+                    cmd.OutputDataReceived += (s, e) =>
+                    {
+                        // (sometimes error messages are only visbile here)
+                        // poor mans solution, we just seek for the term 'error'
+
+                        // we can't just use cmd.ExitCode, because
+                        // we delegate it to cmd.exe, which runs fine
+                        // but we can catch any error here and return
+                        // 1 if something fails
+                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
+                        {
+                            if (e.Data.ToLowerInvariant().Contains("error"))
+                            {
+                                returnCode = 1;
+                            }
+
+                            Console.WriteLine(e.Data);
+                        }
+
+                    };
+                    cmd.ErrorDataReceived += (s, e) =>
+                    {
+                        // poor mans solution, we just seek for the term 'error'
+
+                        // we can't just use cmd.ExitCode, because
+                        // we delegate it to cmd.exe, which runs fine
+                        // but we can catch any error here and return
+                        // 1 if something fails
+                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
+                        {
+                            if (e.Data.ToLowerInvariant().Contains("error"))
+                            {
+                                returnCode = 1;
+                            }
+
+                            Console.WriteLine(e.Data);
+                        }
+
+                    };
                 }
 
                 cmd.Start();
@@ -46,6 +86,8 @@ namespace ElectronNET.CLI
                 {
                     cmd.WaitForExit();
                 }
+
+                return returnCode;
             }
         }
     }
